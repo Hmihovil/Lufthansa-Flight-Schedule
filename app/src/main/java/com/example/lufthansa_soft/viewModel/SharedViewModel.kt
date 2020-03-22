@@ -25,7 +25,6 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
             Constants.CLIENT_SECRET,
             Constants.GRANT_TYPE
         )
-
     }
 
 
@@ -37,11 +36,15 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({
-                _loading.postValue(
-                    AuthState.Success(
-                        it.accessToken ?: ""
+                if (it == null) {
+                    _loading.postValue(AuthState.Loading)
+                } else {
+                    _loading.postValue(
+                        AuthState.Success(
+                            it.accessToken ?: ""
+                        )
                     )
-                )
+                }
             }, {
                 _loading.postValue(
                     AuthState.Error(

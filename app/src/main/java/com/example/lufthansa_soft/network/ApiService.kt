@@ -3,11 +3,12 @@ package com.example.lufthansa_soft.network
 import com.example.lufthansa_soft.model.TokenResponse
 import io.reactivex.Single
 import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
 interface ApiService {
 
-
+    @FormUrlEncoded
     @POST("oauth/token")
     fun retrieveToken(
         @Field("client_id") client_id: String,
