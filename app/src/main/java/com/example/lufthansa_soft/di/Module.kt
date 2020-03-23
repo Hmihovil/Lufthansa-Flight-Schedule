@@ -3,6 +3,7 @@ package com.example.lufthansa_soft.di
 import com.example.lufthansa_soft.Constants.BASE_URL
 import com.example.lufthansa_soft.network.ApiService
 import com.example.lufthansa_soft.viewModel.SharedViewModel
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -14,10 +15,23 @@ import java.util.concurrent.TimeUnit
 
 val appModule = module {
     single { provideHttpInterceptor() }
-    single { provideOkHttpClient(get()) }
+    single { provideInterceptor("8wauyzm9nzkjkvv7dff7xsv7") }
+    single { provideOkHttpClient(get(), get()) }
     single { provideRetrofit(get()) }
     single { provideApiService(get()) }
     viewModel { SharedViewModel(get()) }
+}
+
+fun provideInterceptor(authToken: String) : Interceptor {
+    return Interceptor {
+        val original = it.request()
+
+        val url = original.newBuilder()
+            .header("Authorization", "Bearer $authToken")
+            .build()
+
+        it.proceed(url)
+    }
 }
 
 fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
@@ -34,11 +48,13 @@ fun provideHttpInterceptor() : HttpLoggingInterceptor {
     return httpLoggingInterceptor
 }
 
-fun provideOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor) : OkHttpClient {
+fun provideOkHttpClient(apikeyInterceptor: Interceptor, httpLoggingInterceptor: HttpLoggingInterceptor) : OkHttpClient {
     return OkHttpClient.Builder()
         .connectTimeout(60L, TimeUnit.SECONDS)
         .readTimeout(60L, TimeUnit.SECONDS)
-        .addInterceptor(httpLoggingInterceptor).build()
+        .addInterceptor(apikeyInterceptor)
+        .addInterceptor(httpLoggingInterceptor)
+        .build()
 }
 
 fun provideApiService(retrofit: Retrofit) : ApiService = retrofit.create(ApiService::class.java)

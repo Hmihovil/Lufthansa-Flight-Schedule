@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
+import com.example.lufthansa_soft.Constants
 import com.example.lufthansa_soft.R
 import com.example.lufthansa_soft.showSnackbar
 import com.example.lufthansa_soft.ui.MainActivity
@@ -25,10 +26,14 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
+        viewModel.getToken(
+            Constants.CLIENT_ID,
+            Constants.CLIENT_SECRET,
+            Constants.GRANT_TYPE)
+
         viewModel.loading.observe(this, Observer {
             when(it) {
                 is AuthState.Loading -> {
-                    Log.e("loddd", "here")
                     loading_token.visibility = View.VISIBLE
                 }
                 is AuthState.Success -> {

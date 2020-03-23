@@ -3,4 +3,7 @@
     <string name="title_activity_airline_schedule">Map</string>
     <string name="launcher_image">launcher_image</string>
     <string name="fly_lufthansa_text">Fly Lufthansa</string>
+    <string name="choose_your_destination_text">Choose your destination</string>
+    <string name="destination_hint">Destination</string>
+    <string name="origin_hint">Origin</string>
 </resources>

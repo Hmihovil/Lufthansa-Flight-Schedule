@@ -1,9 +1,11 @@
 package com.example.lufthansa_soft.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.lufthansa_soft.Constants
+import com.example.lufthansa_soft.model.AirportItem
 import com.example.lufthansa_soft.network.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -13,19 +15,15 @@ import io.reactivex.schedulers.Schedulers
 class SharedViewModel(val apiService: ApiService): ViewModel() {
 
     private val _loading = MutableLiveData<AuthState>()
+    private val _data = MutableLiveData<AirportState>()
 
     val loading : LiveData<AuthState>
         get() = _loading
 
-    private lateinit var disposable: Disposable
+    val data : LiveData<AirportState>
+        get() = _data
 
-    init {
-        getToken(
-            Constants.CLIENT_ID,
-            Constants.CLIENT_SECRET,
-            Constants.GRANT_TYPE
-        )
-    }
+    private lateinit var disposable: Disposable
 
 
     fun getToken(client_id: String, client_secret: String, grant_type: String) {
@@ -54,6 +52,25 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
             })
     }
 
+    fun getAirports() {
+        Log.e(">>>>", "here")
+        disposable = apiService
+            .getAirports()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                Log.e("LLLL", "" + it.airport )
+                _data.postValue(AirportState.Success(it.airport ))
+            }, {
+                Log.e(">>>>", it.message ?: "")
+                _loading.postValue(
+                    AuthState.Error(
+                        it.message
+                    )
+                )
+            })
+    }
+
     override fun onCleared() {
         disposable.dispose()
         super.onCleared()
@@ -61,8 +78,12 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
 }
 
 sealed class AuthState {
-
     object Loading: AuthState()
     data class Success(val token: String): AuthState()
     data class Error(val error: String?) : AuthState()
+}
+
+sealed class AirportState {
+    data class Success(val airportList: List<AirportItem>) : AirportState()
+    data class Error(val error: String?) : AirportState()
 }
