@@ -13,6 +13,8 @@ object Constants{
     val CLIENT_ID = "f66texwn5b54b22vwjnq4afq"
     val CLIENT_SECRET = "3x6beQEMgN"
     val GRANT_TYPE = "client_credentials"
+    val TOKEN = "TOKEN"
+    val LUFTHANSA_SOFT = "LUFTHANSA_SOFT"
 
 
     fun isOnline(context: Context) : Boolean {
