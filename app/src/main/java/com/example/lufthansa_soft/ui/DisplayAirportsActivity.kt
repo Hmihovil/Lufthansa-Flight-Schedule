@@ -2,15 +2,10 @@ package com.example.lufthansa_soft.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import android.view.MenuItem
 import com.example.lufthansa_soft.R
-import com.example.lufthansa_soft.showSnackbar
 import com.example.lufthansa_soft.ui.adapter.AirportAdapter
-import com.example.lufthansa_soft.viewModel.AirportState
 import com.example.lufthansa_soft.viewModel.SharedViewModel
-import kotlinx.android.synthetic.main.activity_display_airports.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DisplayAirportsActivity : AppCompatActivity() {
@@ -26,27 +21,40 @@ class DisplayAirportsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display_airports)
-
-        with(airport_list) {
-            setHasFixedSize(true)
-            layoutManager  = LinearLayoutManager(
-                context,
-                LinearLayoutManager.VERTICAL, false
-            )
-            adapter = airportAdapter
-        }
+//        setSupportActionBar(toolbar)
+        supportActionBar!!.title = "Select Flight"
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         viewModel.getAirports()
 
-        viewModel.data.observe(this, Observer {
-            when(it) {
-                is AirportState.Success -> {
-                    airportAdapter.updateList(it.airportList)
-                }
-                is AirportState.Error -> {
-                    display_airport_wrapper.showSnackbar("")
-                }
-            }
-        })
+//        with(airport_list) {
+//            setHasFixedSize(true)
+//            layoutManager  = LinearLayoutManager(
+//                context,
+//                LinearLayoutManager.VERTICAL, false
+//            )
+//            adapter = airportAdapter
+//        }
+
+
+//        viewModel.data.observe(this, Observer {
+//            when(it) {
+//                is AirportState.Success -> {
+//                    flight_progress.visibility = View.GONE
+//                    airportAdapter.updateList(it.airportList)
+//                }
+//                is AirportState.Error -> {
+//                    flight_progress.visibility = View.GONE
+//                    display_airport_wrapper.showSnackbar("Flight could not be loaded")
+//                }
+//            }
+//        })
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

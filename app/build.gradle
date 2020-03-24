@@ -16,6 +16,8 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+
     }
 
     buildTypes {
@@ -54,10 +56,11 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
 
 
-    implementation "org.koin:koin-androidx-scope:2.1.4"
 
-    // Koin AndroidX ViewModel feature
+    // Koin AndroidX
     implementation "org.koin:koin-androidx-viewmodel:2.1.4"
+    implementation "org.koin:koin-androidx-scope:2.1.4"
+    testImplementation "org.koin:koin-test:2.1.4"
 
     /* UI */
     implementation "androidx.cardview:cardview:1.0.0"

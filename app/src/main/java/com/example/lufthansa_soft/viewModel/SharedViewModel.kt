@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.lufthansa_soft.Constants
 import com.example.lufthansa_soft.model.AirportItem
 import com.example.lufthansa_soft.network.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -12,7 +11,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
-class SharedViewModel(val apiService: ApiService): ViewModel() {
+class SharedViewModel(val apiServicewithoutAuth: ApiService,
+                      val apiServiceWithAuth: ApiService): ViewModel() {
 
     private val _loading = MutableLiveData<AuthState>()
     private val _data = MutableLiveData<AirportState>()
@@ -27,7 +27,7 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
 
 
     fun getToken(client_id: String, client_secret: String, grant_type: String) {
-        disposable = apiService.retrieveToken(
+        disposable = apiServicewithoutAuth.retrieveToken(
             client_id,
             client_secret,
             grant_type)
@@ -37,6 +37,7 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
                 if (it == null) {
                     _loading.postValue(AuthState.Loading)
                 } else {
+//                    Log.e("success", it.accessToken)
                     _loading.postValue(
                         AuthState.Success(
                             it.accessToken ?: ""
@@ -53,16 +54,15 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
     }
 
     fun getAirports() {
-        Log.e(">>>>", "here")
-        disposable = apiService
+        disposable = apiServiceWithAuth
             .getAirports()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({
-                Log.e("LLLL", "" + it.airport )
-                _data.postValue(AirportState.Success(it.airport ))
+                Log.e("LLLL", "" + it.airportResource?.airports?.airport )
+                _data.postValue(AirportState.Success(it.airportResource?.airports?.airport!! ))
             }, {
-                Log.e(">>>>", it.message ?: "")
+                Log.e(">>>>444", it.localizedMessage ?: "")
                 _loading.postValue(
                     AuthState.Error(
                         it.message

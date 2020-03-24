@@ -7,6 +7,6 @@ data class Name(
 	@SerializedName("@LanguageCode")
 	val languageCode: String? = null,
 
-	@field:SerializedName("$")
+	@SerializedName("$")
 	val countryName: String? = null
 )
