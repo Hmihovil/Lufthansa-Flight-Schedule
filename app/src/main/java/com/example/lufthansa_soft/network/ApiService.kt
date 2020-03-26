@@ -1,6 +1,8 @@
 package com.example.lufthansa_soft.network
 
-import com.example.lufthansa_soft.model.*
+import com.example.lufthansa_soft.model.Aiports
+import com.example.lufthansa_soft.model.TokenResponse
+import com.example.lufthansa_soft.model.testing.RootModel
 import io.reactivex.Single
 import retrofit2.http.*
 
@@ -16,17 +18,21 @@ interface ApiService {
 
     @Headers(
         "Accept: application/json",
-        "Authorization: Bearer srt6peyyed3k2s238cmptn4z"
+        "Authorization: Bearer vq9tntzj9s9ykf42nb362vrv"
     )
-    @GET("mds-references/airports?limit=200&offset=0&LHoperated=0&lang=en")
+    @GET("mds-references/airports?limit=200&offset=0&LHoperated=1&lang=en&recordLimit=100")
     fun getAirports(): Single<Aiports>
 
-    @GET("/operations/schedules/{origin}/{destination}/{fromDateTime}")
+    @Headers(
+        "Accept: application/json",
+        "Authorization: Bearer vq9tntzj9s9ykf42nb362vrv"
+    )
+    @GET("operations/schedules/{origin}/{destination}/{fromDateTime}")
     fun getAirlineSchedules(
-        @Path(value = "origin") origin: String,
+        @Path("origin") origin: String,
         @Path("destination") destination: String,
         @Path("fromDateTime") fromDateTime: String
-    ): Single<FlightSchedule>
+    ): Single<RootModel>
 
 
 
