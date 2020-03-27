@@ -1,13 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="item"
+            type="com.example.lufthansa_soft.model.testing.FlightItem" />
 
+        <variable
+            name="clicklistener"
+            type="android.view.View.OnClickListener" />
     </data>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="100dp"
+        android:elevation="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:onClick="@{clicklistener}">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/arrival_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginLeft="28dp"
+                android:layout_marginTop="28dp"
+                android:textSize="25sp"
+                android:text="@{item.arrival.airportCode}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="LOS" />
+
+            <TextView
+                android:id="@+id/departure_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
+                android:textSize="25sp"
+                android:text="@{item.departure.airportCode}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="FRA" />
+
+            <TextView
+                android:id="@+id/arrival_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="@+id/arrival_code"
+                app:layout_constraintTop_toBottomOf="@+id/arrival_code"
+                tools:text="07:55" />
+
+            <TextView
+                android:id="@+id/departure_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="@+id/departure_code"
+                app:layout_constraintTop_toBottomOf="@+id/departure_code"
+                tools:text="07:55" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

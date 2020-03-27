@@ -3,38 +3,34 @@ package com.example.lufthansa_soft.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.lufthansa_soft.Constants
-import com.example.lufthansa_soft.network.ApiService
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.example.lufthansa_soft.repository.Repository
+import com.example.lufthansa_soft.model.AirportItem
+import com.example.lufthansa_soft.model.testing.Schedule
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 
 
-class SharedViewModel(val apiService: ApiService): ViewModel() {
+class SharedViewModel(val repository: Repository): ViewModel() {
 
     private val _loading = MutableLiveData<AuthState>()
+    private val _data = MutableLiveData<AirportState>()
+    private val _flightScheduleData = MutableLiveData<FlightScheduleState>()
 
     val loading : LiveData<AuthState>
         get() = _loading
 
-    private lateinit var disposable: Disposable
+    val data : LiveData<AirportState>
+        get() = _data
 
-    init {
-        getToken(
-            Constants.CLIENT_ID,
-            Constants.CLIENT_SECRET,
-            Constants.GRANT_TYPE
-        )
-    }
+    val flightScheduleData: LiveData<FlightScheduleState>
+        get() = _flightScheduleData
+
+    private lateinit var disposable: Disposable
 
 
     fun getToken(client_id: String, client_secret: String, grant_type: String) {
-        disposable = apiService.retrieveToken(
-            client_id,
+        disposable = repository.getToken(client_id,
             client_secret,
             grant_type)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
             .subscribe({
                 if (it == null) {
                     _loading.postValue(AuthState.Loading)
@@ -54,6 +50,32 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
             })
     }
 
+    fun getAirports() {
+        disposable = repository.getAirports()
+            .subscribe({
+                _data.postValue(
+                    AirportState.Success(it.airportResource?.airports?.airport!! ))
+            }, {
+                _loading.postValue(
+                    AuthState.Error(
+                        it.message
+                    )
+                )
+            })
+    }
+
+    fun getSchedules(origin: String, destination: String, time: String) {
+        disposable = repository.getSchedules(
+            origin, destination, time)
+            .subscribe({
+                _flightScheduleData.postValue(
+                    FlightScheduleState.Success(it.scheduleResource?.schedule!!))
+            }, {
+                _flightScheduleData.postValue(
+                    FlightScheduleState.Error(it.message))
+            })
+    }
+
     override fun onCleared() {
         disposable.dispose()
         super.onCleared()
@@ -61,8 +83,17 @@ class SharedViewModel(val apiService: ApiService): ViewModel() {
 }
 
 sealed class AuthState {
-
     object Loading: AuthState()
     data class Success(val token: String): AuthState()
     data class Error(val error: String?) : AuthState()
+}
+
+sealed class AirportState {
+    data class Success(val airportList: List<AirportItem>) : AirportState()
+    data class Error(val error: String?) : AirportState()
+}
+
+sealed class FlightScheduleState {
+    data class Success(val schedules: List<Schedule>) : FlightScheduleState()
+    data class Error(val error: String?) : FlightScheduleState()
 }
