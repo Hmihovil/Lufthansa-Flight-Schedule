@@ -1,6 +1,7 @@
 package com.example.lufthansa_soft.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class AirportItem(
 
@@ -27,4 +28,4 @@ data class AirportItem(
 
 	@SerializedName("LocationType")
 	val locationType: String? = null
-)
+) : Serializable

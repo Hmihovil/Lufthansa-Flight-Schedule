@@ -1,6 +1,7 @@
 package com.example.lufthansa_soft.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Coordinate(
 
@@ -9,4 +10,4 @@ data class Coordinate(
 
 	@SerializedName("Longitude")
 	val longitude: Double? = null
-)
+) : Serializable

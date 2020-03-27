@@ -1,6 +1,7 @@
 package com.example.lufthansa_soft.ui
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -9,9 +10,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lufthansa_soft.R
+import com.example.lufthansa_soft.model.AirportItem
 import com.example.lufthansa_soft.ui.adapter.AirlineSchedulesAdapter
 import com.example.lufthansa_soft.utils.showSnackbar
 import com.example.lufthansa_soft.ui.adapter.AirportAdapter
+import com.example.lufthansa_soft.utils.Constants.ARRIVAL
+import com.example.lufthansa_soft.utils.Constants.DEPARTURE
 import com.example.lufthansa_soft.viewModel.AirportState
 import com.example.lufthansa_soft.viewModel.FlightScheduleState
 import com.example.lufthansa_soft.viewModel.SharedViewModel
@@ -20,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_display_airports.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,11 +36,16 @@ class MainActivity : AppCompatActivity() {
     var isTakeOff = false
     var dateOfSchedule: String? = null
 
+    private var arrival: AirportItem? = null
+    private var departure: AirportItem? = null
+
     private val airportAdapter by lazy {
         AirportAdapter({ item, _ ->
             if (isTakeOff) {
+                departure = item
                 text_takeoff.setText(item.airportCode)
             } else {
+                arrival = item
                 text_landing.setText(item.airportCode)
             }
             if (bottomSheetBehaviour.state != BottomSheetBehavior.STATE_EXPANDED) {
@@ -48,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
     private val scheduleAdapter by lazy {
         AirlineSchedulesAdapter({ item, _ ->
-            Log.e(">>>", item.toString())
+            goToMapsActivity()
         })
     }
 
@@ -112,12 +122,11 @@ class MainActivity : AppCompatActivity() {
             when(it) {
                 is FlightScheduleState.Success -> {
                     progress_bar_schedule.visibility = View.GONE
-                    Log.e(">>>", it.schedules.toString())
                     scheduleAdapter.updateList(it.schedules)
                 }
                 is FlightScheduleState.Error -> {
                     progress_bar_schedule.visibility = View.GONE
-                    display_airport_wrapper.showSnackbar("Schedules could not be loaded")
+//                    display_airport_wrapper.showSnackbar("Schedules could not be loaded")
                 }
             }
         })
@@ -132,6 +141,13 @@ class MainActivity : AppCompatActivity() {
             )
             adapter = airportAdapter
         }
+    }
+
+    private fun goToMapsActivity() {
+        val intent = Intent(this, AirlineScheduleActivity::class.java)
+        intent.putExtra(ARRIVAL, arrival)
+        intent.putExtra(DEPARTURE, departure)
+        startActivity(intent)
     }
 
     private fun toggleBottomSheet() {
@@ -166,7 +182,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun collectSchedule(arrival: String, departure: String, time: String) {
         if (departure != arrival && (arrival.isNotEmpty() && departure.isNotEmpty() && time.isNotEmpty()) ) {
-            Log.e(">>>", departure + arrival + time)
             viewModel.getSchedules(arrival, departure, time)
         } else {
             main_layout.showSnackbar("Origin Code has to be different from Arrival Code")

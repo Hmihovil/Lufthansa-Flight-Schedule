@@ -18,14 +18,14 @@ interface ApiService {
 
     @Headers(
         "Accept: application/json",
-        "Authorization: Bearer vq9tntzj9s9ykf42nb362vrv"
+        "Authorization: Bearer bg9576m2j9vg2gxrep58t3rp"
     )
     @GET("mds-references/airports?limit=200&offset=0&LHoperated=1&lang=en&recordLimit=100")
     fun getAirports(): Single<Aiports>
 
     @Headers(
         "Accept: application/json",
-        "Authorization: Bearer vq9tntzj9s9ykf42nb362vrv"
+        "Authorization: Bearer bg9576m2j9vg2gxrep58t3rp"
     )
     @GET("operations/schedules/{origin}/{destination}/{fromDateTime}")
     fun getAirlineSchedules(

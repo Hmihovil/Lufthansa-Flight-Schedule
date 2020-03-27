@@ -20,6 +20,8 @@ object Constants{
     const val LUFTHANSA_SOFT = "LUFTHANSA_SOFT"
     const val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm"
     const val HOUR_MINUTES = "hh:mm a"
+    const val ARRIVAL = "ARRIVAL"
+    const val DEPARTURE = "DEPARTURE"
 
 
 

@@ -5,9 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.lufthansa_soft.model.AirportItem
-import com.example.lufthansa_soft.model.testing.FlightItem
+import com.example.lufthansa_soft.model.testing.Schedule
 import com.example.lufthansa_soft.network.ApiService
-import com.google.android.gms.dynamic.IFragmentWrapper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -80,12 +79,11 @@ class SharedViewModel(val apiServicewithoutAuth: ApiService,
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .subscribe({
-                if (it.scheduleResource == null) {
-                    Log.e(">>>", "ffff")
-                }
+                Log.e(">>>", it.toString())
                 _flightScheduleData.postValue(
-                    FlightScheduleState.Success(it.scheduleResource?.schedule?.flight!!))
+                    FlightScheduleState.Success(it.scheduleResource?.schedule!!))
             }, {
+                Log.e("errrorNExt", it.message)
                 _flightScheduleData.postValue(
                     FlightScheduleState.Error(it.message))
             })
@@ -109,6 +107,6 @@ sealed class AirportState {
 }
 
 sealed class FlightScheduleState {
-    data class Success(val schedules: List<FlightItem>) : FlightScheduleState()
+    data class Success(val schedules: List<Schedule>) : FlightScheduleState()
     data class Error(val error: String?) : FlightScheduleState()
 }
