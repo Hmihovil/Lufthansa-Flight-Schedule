@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.lufthansa_soft.R
 import com.example.lufthansa_soft.databinding.AirportItemBinding
 import com.example.lufthansa_soft.model.AirportItem
-import kotlinx.android.synthetic.main.activity_display_airports.view.*
 
 class AirportAdapter(val onClick : (item: AirportItem, view: View) -> Unit):
     RecyclerView.Adapter<AirportAdapter.ViewHolder>() {

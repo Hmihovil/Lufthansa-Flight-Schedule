@@ -1,4 +1,4 @@
-package com.example.lufthansa_soft.ui
+package com.example.lufthansa_soft.ui.airlineschedule
 
 import android.graphics.Color
 import android.graphics.Point
@@ -76,7 +76,7 @@ class AirlineScheduleActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val cameraPosition = CameraPosition.Builder().target(
             arrivalLatLng
-        ).zoom(4f).build()
+        ).zoom(1f).build()
 
 
         googleMap.animateCamera(

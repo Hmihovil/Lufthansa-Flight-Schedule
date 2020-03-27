@@ -12,7 +12,6 @@ import java.util.*
 
 
 object Constants{
-    const val BASE_URL = "https://api.lufthansa.com/v1/"
     const val CLIENT_ID = "f66texwn5b54b22vwjnq4afq"
     const val CLIENT_SECRET = "3x6beQEMgN"
     const val GRANT_TYPE = "client_credentials"
@@ -25,26 +24,26 @@ object Constants{
 
 
 
-    fun isOnline(context: Context) : Boolean {
-         val connectionManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-         val activeNetwork = connectionManager.activeNetworkInfo
-        return activeNetwork != null && activeNetwork.isConnected
-    }
-
-    fun convertDate(time: String) : String? {
-        val simpFormater = SimpleDateFormat(DATE_FORMAT)
-        val convertedDate: Date?
-        var formattedDate: String? = null
-        try {
-            convertedDate = simpFormater.parse(time)
-            formattedDate = SimpleDateFormat(HOUR_MINUTES)
-                .format(convertedDate)
-        } catch (e: ParseException) {
-            e.printStackTrace()
-        }
-
-        return formattedDate
-    }
+//    fun isOnline(context: Context) : Boolean {
+//         val connectionManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+//         val activeNetwork = connectionManager.activeNetworkInfo
+//        return activeNetwork != null && activeNetwork.isConnected
+//    }
+//
+//    fun convertDate(time: String) : String? {
+//        val simpFormater = SimpleDateFormat(DATE_FORMAT)
+//        val convertedDate: Date?
+//        var formattedDate: String? = null
+//        try {
+//            convertedDate = simpFormater.parse(time)
+//            formattedDate = SimpleDateFormat(HOUR_MINUTES)
+//                .format(convertedDate)
+//        } catch (e: ParseException) {
+//            e.printStackTrace()
+//        }
+//
+//        return formattedDate
+//    }
 }
 
 fun ViewGroup.showSnackbar(message: String) =

@@ -1,10 +1,9 @@
-package com.example.lufthansa_soft.ui
+package com.example.lufthansa_soft.ui.main_ui
 
 import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
@@ -14,17 +13,16 @@ import com.example.lufthansa_soft.model.AirportItem
 import com.example.lufthansa_soft.ui.adapter.AirlineSchedulesAdapter
 import com.example.lufthansa_soft.utils.showSnackbar
 import com.example.lufthansa_soft.ui.adapter.AirportAdapter
+import com.example.lufthansa_soft.ui.airlineschedule.AirlineScheduleActivity
 import com.example.lufthansa_soft.utils.Constants.ARRIVAL
 import com.example.lufthansa_soft.utils.Constants.DEPARTURE
 import com.example.lufthansa_soft.viewModel.AirportState
 import com.example.lufthansa_soft.viewModel.FlightScheduleState
 import com.example.lufthansa_soft.viewModel.SharedViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.activity_display_airports.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -77,8 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         select_date.setOnClickListener { openDatePicker() }
         check_schedule.setOnClickListener{
-            collectSchedule(
-            text_takeoff.text.toString(),text_landing.text.toString(), dateOfSchedule!!)}
+            collectSchedule()}
 
         with(schedule_list) {
             setHasFixedSize(true)
@@ -113,7 +110,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 is AirportState.Error -> {
                     flight_progress.visibility = View.GONE
-                    display_airport_wrapper.showSnackbar("Flight could not be loaded")
+                    main_layout.showSnackbar("Flight could not be loaded")
+                    if (bottomSheetBehaviour.state != BottomSheetBehavior.STATE_EXPANDED) {
+                        bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
+                    } else {
+                        bottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
                 }
             }
         })
@@ -126,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 is FlightScheduleState.Error -> {
                     progress_bar_schedule.visibility = View.GONE
-//                    display_airport_wrapper.showSnackbar("Schedules could not be loaded")
+                    main_layout.showSnackbar("Schedules could not be found for the location")
                 }
             }
         })
@@ -180,11 +182,20 @@ class MainActivity : AppCompatActivity() {
         dateDialog.show()
     }
 
-    private fun collectSchedule(arrival: String, departure: String, time: String) {
-        if (departure != arrival && (arrival.isNotEmpty() && departure.isNotEmpty() && time.isNotEmpty()) ) {
-            viewModel.getSchedules(arrival, departure, time)
+    private fun collectSchedule() {
+        val arrivalText = text_takeoff.text.toString()
+        val departureText = text_landing.text.toString()
+        val dateSchedule = dateOfSchedule
+        if ((arrivalText.isNotEmpty()
+                    && departureText.isNotEmpty() && dateSchedule != null) ) {
+            if (departureText != arrivalText ) {
+                progress_bar_schedule.visibility = View.VISIBLE
+                viewModel.getSchedules(arrivalText, departureText, dateSchedule)
+            } else {
+                main_layout.showSnackbar("Origin Code has to be different from Arrival Code")
+            }
         } else {
-            main_layout.showSnackbar("Origin Code has to be different from Arrival Code")
+            main_layout.showSnackbar("Fields cannot be empty")
         }
     }
 

@@ -3,14 +3,13 @@ package com.example.lufthansa_soft.ui.splashscreen
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import com.example.lufthansa_soft.utils.Constants
 import com.example.lufthansa_soft.MyApplication
 import com.example.lufthansa_soft.R
 import com.example.lufthansa_soft.utils.showSnackbar
-import com.example.lufthansa_soft.ui.MainActivity
+import com.example.lufthansa_soft.ui.main_ui.MainActivity
 import com.example.lufthansa_soft.viewModel.AuthState
 import com.example.lufthansa_soft.viewModel.SharedViewModel
 import kotlinx.android.synthetic.main.activity_splash.*
@@ -44,7 +43,6 @@ class SplashActivity : AppCompatActivity() {
                 is AuthState.Success -> {
                     GlobalScope.launch {
                         delay(1000)
-                        Log.e("token>>>>>", it.token)
                         MyApplication.pref.token = it.token
                         proceedToMainActivity()
                     }
@@ -62,5 +60,6 @@ class SplashActivity : AppCompatActivity() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
+        finish()
     }
 }

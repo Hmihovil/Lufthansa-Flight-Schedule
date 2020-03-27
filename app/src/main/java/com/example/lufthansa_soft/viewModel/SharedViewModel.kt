@@ -1,19 +1,15 @@
 package com.example.lufthansa_soft.viewModel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.lufthansa_soft.repository.Repository
 import com.example.lufthansa_soft.model.AirportItem
 import com.example.lufthansa_soft.model.testing.Schedule
-import com.example.lufthansa_soft.network.ApiService
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 
 
-class SharedViewModel(val apiServicewithoutAuth: ApiService,
-                      val apiServiceWithAuth: ApiService): ViewModel() {
+class SharedViewModel(val repository: Repository): ViewModel() {
 
     private val _loading = MutableLiveData<AuthState>()
     private val _data = MutableLiveData<AirportState>()
@@ -32,12 +28,9 @@ class SharedViewModel(val apiServicewithoutAuth: ApiService,
 
 
     fun getToken(client_id: String, client_secret: String, grant_type: String) {
-        disposable = apiServicewithoutAuth.retrieveToken(
-            client_id,
+        disposable = repository.getToken(client_id,
             client_secret,
             grant_type)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
             .subscribe({
                 if (it == null) {
                     _loading.postValue(AuthState.Loading)
@@ -58,12 +51,10 @@ class SharedViewModel(val apiServicewithoutAuth: ApiService,
     }
 
     fun getAirports() {
-        disposable = apiServiceWithAuth
-            .getAirports()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
+        disposable = repository.getAirports()
             .subscribe({
-                _data.postValue(AirportState.Success(it.airportResource?.airports?.airport!! ))
+                _data.postValue(
+                    AirportState.Success(it.airportResource?.airports?.airport!! ))
             }, {
                 _loading.postValue(
                     AuthState.Error(
@@ -74,16 +65,12 @@ class SharedViewModel(val apiServicewithoutAuth: ApiService,
     }
 
     fun getSchedules(origin: String, destination: String, time: String) {
-        disposable = apiServiceWithAuth
-            .getAirlineSchedules(origin, destination, time)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
+        disposable = repository.getSchedules(
+            origin, destination, time)
             .subscribe({
-                Log.e(">>>", it.toString())
                 _flightScheduleData.postValue(
                     FlightScheduleState.Success(it.scheduleResource?.schedule!!))
             }, {
-                Log.e("errrorNExt", it.message)
                 _flightScheduleData.postValue(
                     FlightScheduleState.Error(it.message))
             })

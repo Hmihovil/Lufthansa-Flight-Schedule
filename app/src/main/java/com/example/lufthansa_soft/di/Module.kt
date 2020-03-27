@@ -1,8 +1,9 @@
 package com.example.lufthansa_soft.di
 
 
-import com.example.lufthansa_soft.utils.Constants.BASE_URL
+import com.example.lufthansa_soft.repository.AuthRepository
 import com.example.lufthansa_soft.MyApplication
+import com.example.lufthansa_soft.repository.Repository
 import com.example.lufthansa_soft.network.ApiService
 import com.example.lufthansa_soft.viewModel.SharedViewModel
 import okhttp3.Interceptor
@@ -18,19 +19,32 @@ import java.util.concurrent.TimeUnit
 
 
 val appModule = module {
+    single(named("BASE_URL")) {
+        "https://api.lufthansa.com/v1/"
+    }
     single  { provideInterceptor(MyApplication.pref.token) }
     single { provideHttpLoggingInterceptor() }
-    factory(named("auth")) {
+    factory { provideAuthRepository() }
+    factory (named("auth")) {
         provideHttpClientWithAuth(get(), get())
     }
-    single {
+    factory (named("noAuth")){
         provideHttpClientWithoutAuth(get())
     }
-    single (named("noAuth")){ provideApiServiceWithoutAuth(get()) }
-    factory (named("auth")){ provideApiServiceWithAuth(get()) }
-
-    viewModel { SharedViewModel(
-        get(named("noAuth")), get(named("auth"))) }
+    factory {
+        val hasToken = get<AuthRepository>().hasAuthToken
+        if (hasToken!!) {
+            val authApi = get<OkHttpClient>(named("auth"))
+            val baseUrl = get<String>(named("BASE_URL"))
+            provideApiServiceWithAuth(authApi, baseUrl)
+        } else {
+            val noAuthApi = get<OkHttpClient>(named("noAuth"))
+            val baseUrl = get<String>(named("BASE_URL"))
+            provideApiServiceWithoutAuth(noAuthApi, baseUrl)
+        }
+    }
+    factory { provideRepository(get()) }
+    viewModel { SharedViewModel(get()) }
 }
 
 fun provideInterceptor(authToken: String) : Interceptor {
@@ -44,6 +58,12 @@ fun provideInterceptor(authToken: String) : Interceptor {
         it.proceed(url)
     }
 }
+
+fun provideAuthRepository() =
+    AuthRepository()
+
+fun provideRepository(apiService: ApiService) =
+    Repository(apiService)
 
 fun provideHttpLoggingInterceptor() : HttpLoggingInterceptor {
     val httpLoggingInterceptor = HttpLoggingInterceptor()
@@ -72,18 +92,18 @@ fun provideHttpClientWithoutAuth(
 }
 
 
-fun provideApiServiceWithAuth(okHttpClient: OkHttpClient) : ApiService {
+fun provideApiServiceWithAuth(okHttpClient: OkHttpClient, baseUrl: String) : ApiService {
     return Retrofit.Builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(baseUrl)
         .client(okHttpClient)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
         .build().create(ApiService::class.java)
 }
 
-fun provideApiServiceWithoutAuth(okHttpClient: OkHttpClient) : ApiService {
+fun provideApiServiceWithoutAuth(okHttpClient: OkHttpClient, baseUrl: String) : ApiService {
     return Retrofit.Builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(baseUrl)
         .client(okHttpClient)
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
