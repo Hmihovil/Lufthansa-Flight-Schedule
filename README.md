@@ -1,9 +1,9 @@
 # Flight Schedule Application
 - This app retrieves flight schedules from [Luftansa API](https://developer.lufthansa.com) and displays them on a map
 
-<img src="https://github.com/pawnjester/Flight-Schedule/blob/develop/art/Screenshot_1585337292.png" height="450">
-|<img src="https://github.com/pawnjester/Flight-Schedule/blob/develop/art/Screenshot_1585337488.png" height="450">
-|<img src="https://github.com/pawnjester/Flight-Schedule/blob/develop/art/Screenshot_1585337337.png" height="450">
+![Screenshot_1585337292](https://user-images.githubusercontent.com/26750279/77830626-08771680-70e7-11ea-94ab-7ecb08778d30.png)
+![Screenshot_1585337337](https://user-images.githubusercontent.com/26750279/77830630-0f058e00-70e7-11ea-833a-4d2b2b592a38.png)
+![Screenshot_1585337488](https://user-images.githubusercontent.com/26750279/77830632-1167e800-70e7-11ea-922f-315dd0e1a2e2.png)
 
 
 ### Installing
