@@ -1,14 +1,17 @@
 package com.example.lufthansa_soft.di
 
 
+import android.content.Context
 import com.example.lufthansa_soft.repository.AuthRepository
 import com.example.lufthansa_soft.MyApplication
 import com.example.lufthansa_soft.repository.Repository
 import com.example.lufthansa_soft.network.ApiService
+import com.example.lufthansa_soft.utils.SharedPrefs
 import com.example.lufthansa_soft.viewModel.SharedViewModel
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -19,12 +22,17 @@ import java.util.concurrent.TimeUnit
 
 
 val appModule = module {
+
     single(named("BASE_URL")) {
         "https://api.lufthansa.com/v1/"
     }
-    single  { provideInterceptor(MyApplication.pref.token) }
+    single {  provideSharedPreferences(androidContext())}
+    single  {
+        val token = get<SharedPrefs>().token
+        provideInterceptor(token)
+    }
     single { provideHttpLoggingInterceptor() }
-    factory { provideAuthRepository() }
+    factory { provideAuthRepository(get()) }
     factory (named("auth")) {
         provideHttpClientWithAuth(get(), get())
     }
@@ -47,6 +55,8 @@ val appModule = module {
     viewModel { SharedViewModel(get()) }
 }
 
+fun provideSharedPreferences(context: Context) = SharedPrefs(context)
+
 fun provideInterceptor(authToken: String) : Interceptor {
     return Interceptor {
         val original = it.request()
@@ -59,8 +69,9 @@ fun provideInterceptor(authToken: String) : Interceptor {
     }
 }
 
-fun provideAuthRepository() =
-    AuthRepository()
+
+fun provideAuthRepository(sharedPrefs: SharedPrefs) =
+    AuthRepository(sharedPrefs)
 
 fun provideRepository(apiService: ApiService) =
     Repository(apiService)

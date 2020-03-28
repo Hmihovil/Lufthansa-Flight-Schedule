@@ -18,11 +18,9 @@ import org.koin.test.inject
 
 class NetworkTest: KoinTest {
 
-    val api: ApiService by inject()
     val baseUrl: String by lazy {  get(named("BASE_URL")) as String }
     val okHttpClient: OkHttpClient by lazy  {  get(named("auth")) as OkHttpClient }
     val httpLogger: HttpLoggingInterceptor by inject()
-    val interceptor: Interceptor by inject()
 
     @Before
     fun setup() {
@@ -43,11 +41,7 @@ class NetworkTest: KoinTest {
 
     @Test
     fun `Test http logger is not null` (){
-//        assertNotNull(httpLogger)
-    }
-
-    fun `Test interceptor is not null`() {
-//        val intercept = Interceptor("")
+        assertNotNull(httpLogger)
     }
 
     @Test

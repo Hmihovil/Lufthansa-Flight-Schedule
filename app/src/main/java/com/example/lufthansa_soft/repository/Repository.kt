@@ -9,7 +9,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class Repository(private val apiService: ApiService) {
+open class Repository(private val apiService: ApiService) {
 
     fun getToken(client_id: String, client_secret: String,
                  grant_type: String) : Single<TokenResponse> {

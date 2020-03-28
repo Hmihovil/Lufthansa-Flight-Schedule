@@ -16,6 +16,7 @@ import com.example.lufthansa_soft.ui.adapter.AirportAdapter
 import com.example.lufthansa_soft.ui.airlineschedule.AirlineScheduleActivity
 import com.example.lufthansa_soft.utils.Constants.ARRIVAL
 import com.example.lufthansa_soft.utils.Constants.DEPARTURE
+import com.example.lufthansa_soft.utils.Constants.isOnline
 import com.example.lufthansa_soft.viewModel.AirportState
 import com.example.lufthansa_soft.viewModel.FlightScheduleState
 import com.example.lufthansa_soft.viewModel.SharedViewModel
@@ -66,16 +67,30 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         text_takeoff.setOnClickListener {
-            isTakeOff = true
-            toggleBottomSheet()
+            if (isOnline(this)) {
+                isTakeOff = true
+                toggleBottomSheet()
+            } else {
+                main_layout.showSnackbar("Please connect to the internet")
+            }
         }
         text_landing.setOnClickListener {
-            isTakeOff = false
-            toggleBottomSheet() }
+            if (isOnline(this)) {
+                isTakeOff = false
+                toggleBottomSheet()
+            } else {
+                main_layout.showSnackbar("Please connect to the internet")
+            }
+             }
 
         select_date.setOnClickListener { openDatePicker() }
         check_schedule.setOnClickListener{
-            collectSchedule()}
+            if (isOnline(this)) {
+                collectSchedule()
+            } else {
+                main_layout.showSnackbar("Please connect to the internet")
+            }
+           }
 
         with(schedule_list) {
             setHasFixedSize(true)
@@ -128,7 +143,8 @@ class MainActivity : AppCompatActivity() {
                 }
                 is FlightScheduleState.Error -> {
                     progress_bar_schedule.visibility = View.GONE
-                    main_layout.showSnackbar("Schedules could not be found for the location")
+                    main_layout.showSnackbar(
+                        "Schedules could not be found for the location")
                 }
             }
         })
