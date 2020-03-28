@@ -16,6 +16,7 @@
 - RxJava
 - koin for dependency Injection
 - Retrofit and OKhttp for making network calls
+- MVVM
 
 
 ### Functionalities
