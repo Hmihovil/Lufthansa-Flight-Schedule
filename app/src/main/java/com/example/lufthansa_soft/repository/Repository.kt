@@ -13,9 +13,7 @@ open class Repository(private val apiService: ApiService) {
 
     fun getToken(client_id: String, client_secret: String,
                  grant_type: String) : Single<TokenResponse> {
-        return apiService.retrieveToken(
-            client_id,
-            client_secret,
+        return apiService.retrieveToken(client_id, client_secret,
             grant_type)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())

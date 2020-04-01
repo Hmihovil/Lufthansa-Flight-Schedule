@@ -58,10 +58,8 @@ class SharedViewModel(val repository: Repository): ViewModel() {
                 _data.postValue(
                     AirportState.Success(it.airportResource?.airports?.airport!! ))
             }, {
-                _loading.postValue(
-                    AuthState.Error(
-                        it.message
-                    )
+                _data.postValue(
+                    AirportState.Error(it.message)
                 )
             }).addToCompositeDisposable(compositeDisposable)
     }
