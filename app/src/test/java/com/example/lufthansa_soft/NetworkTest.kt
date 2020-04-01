@@ -44,9 +44,4 @@ class NetworkTest: KoinTest {
         assertNotNull(httpLogger)
     }
 
-    @Test
-    fun `Test OkHttp client` () {
-        assertNotNull(okHttpClient)
-    }
-
 }
