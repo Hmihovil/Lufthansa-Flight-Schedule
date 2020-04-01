@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.example.lufthansa_soft.repository.Repository
 import com.example.lufthansa_soft.model.AirportItem
 import com.example.lufthansa_soft.model.testing.Schedule
+import com.example.lufthansa_soft.utils.addToCompositeDisposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 
@@ -24,11 +26,11 @@ class SharedViewModel(val repository: Repository): ViewModel() {
     val flightScheduleData: LiveData<FlightScheduleState>
         get() = _flightScheduleData
 
-    private lateinit var disposable: Disposable
+    private val compositeDisposable = CompositeDisposable()
 
 
     fun getToken(client_id: String, client_secret: String, grant_type: String) {
-        disposable = repository.getToken(client_id,
+        repository.getToken(client_id,
             client_secret,
             grant_type)
             .subscribe({
@@ -47,11 +49,11 @@ class SharedViewModel(val repository: Repository): ViewModel() {
                         it.message
                     )
                 )
-            })
+            }).addToCompositeDisposable(compositeDisposable)
     }
 
     fun getAirports() {
-        disposable = repository.getAirports()
+        repository.getAirports()
             .subscribe({
                 _data.postValue(
                     AirportState.Success(it.airportResource?.airports?.airport!! ))
@@ -61,11 +63,11 @@ class SharedViewModel(val repository: Repository): ViewModel() {
                         it.message
                     )
                 )
-            })
+            }).addToCompositeDisposable(compositeDisposable)
     }
 
     fun getSchedules(origin: String, destination: String, time: String) {
-        disposable = repository.getSchedules(
+        repository.getSchedules(
             origin, destination, time)
             .subscribe({
                 _flightScheduleData.postValue(
@@ -73,12 +75,12 @@ class SharedViewModel(val repository: Repository): ViewModel() {
             }, {
                 _flightScheduleData.postValue(
                     FlightScheduleState.Error(it.message))
-            })
+            }).addToCompositeDisposable(compositeDisposable)
     }
 
     override fun onCleared() {
-        disposable.dispose()
         super.onCleared()
+        compositeDisposable.clear()
     }
 }
 

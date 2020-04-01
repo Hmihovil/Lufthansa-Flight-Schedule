@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.Observer
@@ -17,6 +18,7 @@ import com.example.lufthansa_soft.ui.airlineschedule.AirlineScheduleActivity
 import com.example.lufthansa_soft.utils.Constants.ARRIVAL
 import com.example.lufthansa_soft.utils.Constants.DEPARTURE
 import com.example.lufthansa_soft.utils.Constants.isOnline
+import com.example.lufthansa_soft.utils.SharedPrefs
 import com.example.lufthansa_soft.viewModel.AirportState
 import com.example.lufthansa_soft.viewModel.FlightScheduleState
 import com.example.lufthansa_soft.viewModel.SharedViewModel
@@ -24,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.bottom_sheet.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     val viewModel: SharedViewModel by viewModel()
     var isTakeOff = false
     var dateOfSchedule: String? = null
+    val pref: SharedPrefs by inject()
 
     private var arrival: AirportItem? = null
     private var departure: AirportItem? = null
@@ -139,6 +143,7 @@ class MainActivity : AppCompatActivity() {
             when(it) {
                 is FlightScheduleState.Success -> {
                     progress_bar_schedule.visibility = View.GONE
+                    schedule_list.visibility = View.VISIBLE
                     scheduleAdapter.updateList(it.schedules)
                 }
                 is FlightScheduleState.Error -> {
@@ -149,6 +154,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        pref.token = ""
+    }
+
 
     private fun setupRecycler() {
         with(airport_list) {
@@ -206,6 +217,7 @@ class MainActivity : AppCompatActivity() {
                     && departureText.isNotEmpty() && dateSchedule != null) ) {
             if (departureText != arrivalText ) {
                 progress_bar_schedule.visibility = View.VISIBLE
+                schedule_list.visibility = View.GONE
                 viewModel.getSchedules(arrivalText, departureText, dateSchedule)
             } else {
                 main_layout.showSnackbar("Origin Code has to be different from Arrival Code")

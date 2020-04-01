@@ -38,4 +38,6 @@ class MyApplication: Application() {
         pref.token = ""
 
     }
+
+
 }

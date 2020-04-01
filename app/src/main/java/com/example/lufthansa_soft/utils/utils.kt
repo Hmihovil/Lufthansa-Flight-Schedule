@@ -6,6 +6,8 @@ import android.net.ConnectivityManager
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,4 +51,8 @@ object Constants{
 fun ViewGroup.showSnackbar(message: String, action: (View) -> Unit = {}) =
     Snackbar.make(this, message, Snackbar.LENGTH_LONG).setAction("RETRY", action)
         .show()
+
+fun Disposable.addToCompositeDisposable(disposable: CompositeDisposable) {
+    disposable.add(disposable)
+}
 
