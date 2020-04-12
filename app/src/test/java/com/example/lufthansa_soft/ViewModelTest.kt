@@ -2,7 +2,7 @@ package com.example.lufthansa_soft
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import com.example.lufthansa_soft.model.TokenResponse
+import com.example.lufthansa_soft.model.*
 import com.example.lufthansa_soft.network.ApiService
 import com.example.lufthansa_soft.repository.Repository
 import com.example.lufthansa_soft.utils.Constants
@@ -12,6 +12,8 @@ import com.example.lufthansa_soft.viewModel.FlightScheduleState
 import com.example.lufthansa_soft.viewModel.SharedViewModel
 import com.nhaarman.mockitokotlin2.*
 import io.reactivex.Single
+import junit.framework.Assert.assertEquals
+import junit.framework.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +26,6 @@ class ViewModelTest {
     private var observer = mock<Observer<AuthState>>()
     private var flightobserver = mock<Observer<FlightScheduleState>>()
     private var airportobserver = mock<Observer<AirportState>>()
-
 
     @get:Rule var testSchedulerRule = RxSchedulerTestRule()
 
@@ -53,11 +54,14 @@ class ViewModelTest {
             Constants.GRANT_TYPE)
 
         verify(observer).onChanged(AuthState.Success(tokenResponse.accessToken!!))
+        verify(apiService, times(1)).retrieveToken(Constants.CLIENT_ID,
+            Constants.CLIENT_SECRET,
+            Constants.GRANT_TYPE)
 
     }
 
     @Test
-    fun verifyGetError() {
+    fun `verify GetError On Token Get`() {
         whenever(apiService.retrieveToken(
             Constants.CLIENT_ID,
             Constants.CLIENT_SECRET,
@@ -70,6 +74,8 @@ class ViewModelTest {
             Constants.GRANT_TYPE)
 
         verify(observer).onChanged(AuthState.Error("Api error"))
+        assertNotNull(viewModel.loading)
+        assertEquals(AuthState.Error("Api error"), viewModel.loading.value)
     }
 
     @Test
@@ -98,5 +104,29 @@ class ViewModelTest {
         viewModel.getAirports()
 
         verify(airportobserver).onChanged(AirportState.Error("Api error"))
+    }
+
+    @Test
+    fun `verify successfull airport call`() {
+        val fakeResponse = listOf(
+            AirportItem(countryCode = "AA",
+                cityCode = "AA",
+                utcOffset = "33",
+                position = null,
+                timeZoneId = "122",
+                locationType = "atlanta",
+                names = null,
+                airportCode = "AAB")
+        )
+        val airport =  Airports(airport = fakeResponse)
+        val airports = Aiports(airportResource = AirportResource(airports = airport))
+        whenever(apiService.getAirports()).thenReturn(Single.just(airports))
+
+        viewModel.data.observeForever(airportobserver)
+
+        viewModel.getAirports()
+
+        verify(apiService, times(1)).getAirports()
+        verify(airportobserver).onChanged(AirportState.Success(fakeResponse))
     }
 }

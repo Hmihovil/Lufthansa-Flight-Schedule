@@ -39,6 +39,8 @@ class MainActivity : AppCompatActivity() {
     var dateOfSchedule: String? = null
     val pref: SharedPrefs by inject()
 
+
+
     private var arrival: AirportItem? = null
     private var departure: AirportItem? = null
 
@@ -133,6 +135,7 @@ class MainActivity : AppCompatActivity() {
                     if (bottomSheetBehaviour.state != BottomSheetBehavior.STATE_EXPANDED) {
                         bottomSheetBehaviour.state = BottomSheetBehavior.STATE_EXPANDED
                     } else {
+
                         bottomSheetBehaviour.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                 }
