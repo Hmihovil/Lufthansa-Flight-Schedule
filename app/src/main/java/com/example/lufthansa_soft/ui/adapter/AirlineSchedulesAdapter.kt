@@ -7,14 +7,15 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lufthansa_soft.R
 import com.example.lufthansa_soft.databinding.AirlineScheduleItemBinding
+import com.example.lufthansa_soft.model.testing.FlightItem
 import com.example.lufthansa_soft.model.testing.Schedule
 
-class AirlineSchedulesAdapter(val onClick: (item: Schedule, view: View) -> Unit )
+class AirlineSchedulesAdapter(val onClick: (item: FlightItem, view: View) -> Unit )
     : RecyclerView.Adapter<AirlineSchedulesAdapter.ViewHolder>() {
 
-    private val flightItem = mutableListOf<Schedule>()
+    private val flightItem = mutableListOf<FlightItem>()
 
-    fun updateList(flightItemList: List<Schedule>) {
+    fun updateList(flightItemList: List<FlightItem>) {
         flightItem.clear()
         flightItem.addAll(flightItemList)
         notifyDataSetChanged()
@@ -38,16 +39,16 @@ class AirlineSchedulesAdapter(val onClick: (item: Schedule, view: View) -> Unit 
     inner class ViewHolder(val binding: AirlineScheduleItemBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(listener: View.OnClickListener, item: Schedule) {
-            item.flight?.forEach {
-                binding.item = it
-            }
+        fun bind(listener: View.OnClickListener, item: FlightItem) {
+//            item.flight?.forEach {
+                binding.item = item
+//            }
             binding.clicklistener = listener
             binding.executePendingBindings()
         }
     }
 
-    private fun createOnClick(item: Schedule) : View.OnClickListener {
+    private fun createOnClick(item: FlightItem) : View.OnClickListener {
         return View.OnClickListener {
             onClick(item, it)
         }

@@ -3,7 +3,6 @@ package com.example.lufthansa_soft.di
 
 import android.content.Context
 import com.example.lufthansa_soft.repository.AuthRepository
-import com.example.lufthansa_soft.MyApplication
 import com.example.lufthansa_soft.repository.Repository
 import com.example.lufthansa_soft.network.ApiService
 import com.example.lufthansa_soft.utils.SharedPrefs
