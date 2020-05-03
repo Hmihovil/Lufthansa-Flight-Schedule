@@ -9,5 +9,5 @@ data class ScheduleResource(
 	val meta: Meta? = null,
 
 	@SerializedName("Schedule")
-	val schedule: List<Schedule>? = null
+	val schedule: Schedule
 )

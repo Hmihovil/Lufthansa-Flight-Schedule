@@ -1,10 +1,12 @@
 package com.example.lufthansa_soft.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.lufthansa_soft.repository.Repository
 import com.example.lufthansa_soft.model.AirportItem
+import com.example.lufthansa_soft.model.testing.FlightItem
 import com.example.lufthansa_soft.model.testing.Schedule
 import com.example.lufthansa_soft.utils.addToCompositeDisposable
 import io.reactivex.disposables.CompositeDisposable
@@ -69,7 +71,7 @@ class SharedViewModel(val repository: Repository): ViewModel() {
             origin, destination, time)
             .subscribe({
                 _flightScheduleData.postValue(
-                    FlightScheduleState.Success(it.scheduleResource?.schedule!!))
+                    FlightScheduleState.Success(it.scheduleResource?.schedule?.flight!!))
             }, {
                 _flightScheduleData.postValue(
                     FlightScheduleState.Error(it.message))
@@ -94,6 +96,6 @@ sealed class AirportState {
 }
 
 sealed class FlightScheduleState {
-    data class Success(val schedules: List<Schedule>) : FlightScheduleState()
+    data class Success(val schedules: List<FlightItem>) : FlightScheduleState()
     data class Error(val error: String?) : FlightScheduleState()
 }
